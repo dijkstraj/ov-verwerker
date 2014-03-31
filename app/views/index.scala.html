@@ -2,6 +2,13 @@
 
 @main("Welcome to Play") {
 
-    @play20.welcome(message)
+    @helper.form(action = routes.Application.process, 'enctype -> "multipart/form-data") {
+    
+      <input type="file" name="transacties">
+      
+      <p>
+          <input type="submit">
+      </p>
+    }
 
 }
