@@ -24,16 +24,19 @@ function addWeekdays() {
 }
 
 function checkThisPage() {
-  if (getCurrentPage() == pageToCheck) {
+  var currentPage = getCurrentPage();
+  console.log("checkThisPage: " + currentPage + ", " + pageToCheck);
+  if (currentPage == pageToCheck) {
     $("tr").has("td:contains('Check-uit')").each(function() {
       var date = getRowDate(this);
       var workingDay = isWorkingDay(date.getDay());
       $(this).find(":checkbox").each(function() {
         if (workingDay != $(this).prop("checked")) {
           clickQueue.push($(this).attr("id"));
+          console.log("Pushed to queue: " + clickQueue);
         }
       });
-      $(this).css("background-color", $(this).find(":checkbox").prop("checked") ? "lime" : "red");
+      $(this).css("background-color", workingDay ? "lime" : "red");
     });
     setTimeout(clearClickQueue, 500);
   } else {
@@ -42,6 +45,7 @@ function checkThisPage() {
 }
 
 function clearClickQueue() {
+  console.log("Clearing queue: " + clickQueue);
   if (clickQueue.length > 0) {
     $("#" + clickQueue.shift()).click();
     setTimeout(clearClickQueue, 1000);
@@ -51,6 +55,7 @@ function clearClickQueue() {
 }
 
 function moveToNextPage() {
+  console.log("Moving to next page");
   pageToCheck++;
   $(".volgende a").click();
   setTimeout(checkThisPage, 2000);
