@@ -4,6 +4,7 @@ function getCurrentPage() {
 
 var weekdays = ['zondag', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag'];
 var pageToCheck = getCurrentPage();
+var clickQueue = [];
 
 function getRowDate(row) {
   var dateStr = $(row).find("td").first().text().trim();
@@ -29,14 +30,23 @@ function checkThisPage() {
       var workingDay = isWorkingDay(date.getDay());
       $(this).find(":checkbox").each(function() {
         if (workingDay != $(this).prop("checked")) {
-          $(this).click();
+          clickQueue.push($(this).attr("id"));
         }
       });
       $(this).css("background-color", $(this).find(":checkbox").prop("checked") ? "lime" : "red");
     });
-    setTimeout(moveToNextPage, 2000);
+    setTimeout(clearClickQueue, 500);
   } else {
     setInterval(addWeekdays, 1500);
+  }
+}
+
+function clearClickQueue() {
+  if (clickQueue.length > 0) {
+    $("#" + clickQueue.shift()).click();
+    setTimeout(clearClickQueue, 1000);
+  } else {
+    moveToNextPage();
   }
 }
 
