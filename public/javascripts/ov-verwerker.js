@@ -27,12 +27,12 @@ function checkThisPage() {
   var currentPage = getCurrentPage();
   console.log("checkThisPage: " + currentPage + ", " + pageToCheck);
   if (currentPage == pageToCheck) {
-    $("tr").has("td:contains('Check-uit')").each(function() {
+    $("tr").has("td:contains('Check-uit')").each(function(index) {
       var date = getRowDate(this);
       var workingDay = isWorkingDay(date.getDay());
       $(this).find(":checkbox").each(function() {
         if (workingDay != $(this).prop("checked")) {
-          clickQueue.push($(this).attr("id"));
+          clickQueue.push(index);
           console.log("Pushed to queue: " + clickQueue);
         }
       });
@@ -47,7 +47,7 @@ function checkThisPage() {
 function clearClickQueue() {
   console.log("Clearing queue: " + clickQueue);
   if (clickQueue.length > 0) {
-    $("#" + clickQueue.shift()).click();
+    $($("tr").has("td:contains('Check-uit')")[clickQueue.shift()]).find(":checkbox").click();
     setTimeout(clearClickQueue, 1000);
   } else {
     moveToNextPage();
