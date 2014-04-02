@@ -40,7 +40,7 @@ function checkThisPage() {
     });
     setTimeout(clearClickQueue, 500);
   } else {
-    setInterval(addWeekdays, 1500);
+    setInterval(addWeekdays, 500);
   }
 }
 
