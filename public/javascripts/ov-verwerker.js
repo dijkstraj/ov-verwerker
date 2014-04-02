@@ -34,7 +34,7 @@ function checkThisPage() {
       });
       $(this).css("background-color", $(this).find(":checkbox").prop("checked") ? "lime" : "red");
     });
-    setTimeout(moveToNextPage, 1000);
+    setTimeout(moveToNextPage, 2000);
   } else {
     setInterval(addWeekdays, 1500);
   }
@@ -43,7 +43,7 @@ function checkThisPage() {
 function moveToNextPage() {
   pageToCheck++;
   $(".volgende a").click();
-  setTimeout(checkThisPage, 500);
+  setTimeout(checkThisPage, 2000);
 }
 
 checkThisPage();
