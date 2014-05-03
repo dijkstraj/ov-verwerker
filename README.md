@@ -4,7 +4,7 @@ OV Verwerker
 Declaraties aanvinken op "Mijn OV-chipkaart"
 --------------------------------------------
 
-* Sla deze tekst op als bookmark: `javascript: (function () { var j = document.createElement('script'); j.setAttribute('type', 'text/javascript'); j.setAttribute('src', '//code.google.com/p/ov-verwerker/source/browse/public/javascripts/bootstrap.js'); document.body.appendChild(j); })();`
+* Sla deze tekst op als bookmark: `javascript: (function () { var j = document.createElement('script'); j.setAttribute('type', 'text/javascript'); j.setAttribute('src', '//ov-verwerker.googlecode.com/git/public/javascripts/bootstrap.js'); document.body.appendChild(j); })();`
 * Log in op [www.ov-chipkaart.nl](http://www.ov-chipkaart.nl)
 * Ga naar "Mijn OV-chipkaart"
 * Kies "Transactieoverzicht"
