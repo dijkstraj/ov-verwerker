@@ -1,6 +1,6 @@
 var includes = [
 	'//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js',
-	'//bitbucket.org/jdijkstra/ov-verwerker/raw/bookmarklet/public/javascripts/ov-verwerker.js'
+	'//code.google.com/p/ov-verwerker/source/browse/public/javascripts/ov-verwerker.js'
 ];
 
 function include(includes) {
@@ -20,5 +20,5 @@ var css = document.createElement('link');
 css.setAttribute('media', 'screen');
 css.setAttribute('rel', 'stylesheet');
 css.setAttribute('type', 'text/css');
-css.setAttribute('href', '//bitbucket.org/jdijkstra/ov-verwerker/raw/bookmarklet/public/stylesheets/ov-verwerker.css');
+css.setAttribute('href', '//code.google.com/p/ov-verwerker/source/browse/public/stylesheets/ov-verwerker.css');
 document.head.appendChild(css);
