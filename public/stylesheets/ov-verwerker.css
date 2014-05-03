@@ -1,0 +1,13 @@
+#ov-options {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+}
+
+#ov-options .body {
+	background-color: white;
+}
+
+#ov-options input {
+	width: auto;
+}
