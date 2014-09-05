@@ -1,14 +1,58 @@
-@(message: String)
+@()
 
-@main("Welcome to Play") {
+<!DOCTYPE html>
 
-    @helper.form(action = routes.Application.process, 'enctype -> "multipart/form-data") {
+<html>
+<head>
+<title>OV Verwerker</title>
+<link rel="stylesheet" href="@routes.WebJarAssets.at(WebJarAssets.locate("bootswatch-lumen/3.2.0/css/bootstrap.min.css"))"/>
+<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+@Html(org.webjars.play.RequireJS.setup("javascripts/main"))
+</head>
+<body ng-controller="MainCtrl">
+  <div class="container">
+    <div class="col-md-12" ng-hide="loggedIn">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" class="form-control" id="username" placeholder="Username" ng-model="username" focus-on="focusCommand">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" placeholder="Password" ng-model="password">
+      </div>
+      <button type="submit" class="btn btn-primary" ng-disabled="!username || !password" ng-click="login()">Log in</button>
+    </div>
     
-      <input type="file" name="transacties">
-      
-      <p>
-          <input type="submit">
-      </p>
-    }
-
-}
+    <div class="col-md-3">
+      <h3>Selectie</h3>
+      <div class="list-group">
+        <a href="#" class="list-group-item" ng-repeat="period in periods" ng-click="selectPeriod(period)">{{ period }}</a>
+      </div>
+    </div>
+    
+    <div class="col-md-9">
+      <h3>{{period}}</h3>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Datum</th>
+            <th>Tijd</th>
+            <th>In</th>
+            <th>Uit</th>
+            <th>Prijs</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="tx in transactions | orderBy:['date','time']">
+            <td>{{tx.date}}</td>
+            <td>{{tx.time}}</td>
+            <td>{{tx.in}}</td>
+            <td>{{tx.out}}</td>
+            <td>{{tx.price | currency:'€'}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

@@ -2,20 +2,27 @@ package controllers
 
 import java.io.File
 import java.io.FileOutputStream
-
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.joda.time.DateTime
 import org.joda.time.DateTimeConstants.THURSDAY
 import org.joda.time.DateTimeConstants.TUESDAY
-
 import play.api.mvc.Action
 import play.api.mvc.Controller
+import play.api.mvc.WebSocket
+import play.api.libs.json.JsValue
+import _root_.actors.WebSocketActor
+import play.api.Play.current
+import scala.concurrent.Future
 
 object Application extends Controller {
 
   def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
+  }
+  
+  def ov = WebSocket.tryAcceptWithActor[JsValue, JsValue] { request =>
+    Future.successful(Right(WebSocketActor.props _))
   }
 
   def process = Action(parse.multipartFormData) { request =>
