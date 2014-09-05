@@ -43,7 +43,7 @@ object OvChipkaartActor {
           if (description.startsWith("Check-uit")) {
             val re = """(?s)Check-uit (\d\d:\d\d) (.*) bij .*Check-in (.*) bij .*Ritprijs € (\d+,\d+)""".r
             re.findFirstIn(description) match {
-              case Some(re(time, in, out, price)) =>
+              case Some(re(time, out, in, price)) =>
                 val name = row.getCell(3).getFirstChild().getAttributes().getNamedItem("name").getTextContent()
                 println(name)
                 val tx = Transaction(reorderDate(row.getCell(0).asText()), time, description, in, out, price.replace(",", ".").toDouble)
