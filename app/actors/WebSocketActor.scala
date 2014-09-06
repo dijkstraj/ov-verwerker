@@ -26,6 +26,7 @@ class WebSocketActor(out: ActorRef) extends Actor {
   val ov = Akka.system.actorOf(Props[OvChipkaartActor])
 
   import OvChipkaartActor._
+  import lib.OvChipkaartClient.Transaction
   
   def receive = {
     case JsObject(Seq(("username", JsString(username)), ("password", JsString(password)))) =>
