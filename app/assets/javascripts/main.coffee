@@ -32,6 +32,7 @@ require([ 'angular', 'angular-animate', 'underscorejs', 'bootstrap',
       $scope.days = {}
       $scope.destinations = angular.fromJson($window.localStorage.destinations) || []
       $scope.pdfs = {}
+      $scope.tasks = {}
       
       updateDays = ->
         days = _($scope.transactions).groupBy((tx) -> tx.date)
@@ -78,11 +79,17 @@ require([ 'angular', 'angular-animate', 'underscorejs', 'bootstrap',
           updateDays()
         else
           console.log('Loading transactions from website')
+          $scope.tasks[period] =
+            name: 'Transacties ophalen voor "' + period + '"'
+            progress: 100
           socket.send(angular.toJson(period))
           
       $scope.createPdf = ->
         selectedTransactions = _(_(_(_($scope.days).filter((day) -> day.selected)).map((day) -> day.transactions)).flatten()).map((tx) -> tx.name)
         console.log('Create pdf', selectedTransactions)
+        $scope.tasks[$scope.period + '/pdf'] =
+          name: 'PDF maken voor "' + $scope.period + '" (' + selectedTransactions.length + ' transacties)'
+          progress: 100
         socket.send(angular.toJson(
           period: $scope.period
           transactions: selectedTransactions
@@ -112,10 +119,13 @@ require([ 'angular', 'angular-animate', 'underscorejs', 'bootstrap',
           if data.transaction? and data.transaction.period == $scope.period
             $scope.transactions.push(data.transaction)
             updateDays()
-          if data.finished? and data.finished == $scope.period
-            console.log('Saving transactions to localStorage')
-            $window.localStorage[periodKey()] = angular.toJson($scope.transactions)
+          if data.finished?
+            delete $scope.tasks[data.finished]
+            if data.finished == $scope.period
+              console.log('Saving transactions to localStorage')
+              $window.localStorage[periodKey()] = angular.toJson($scope.transactions)
           if data.pdf?
+            delete $scope.tasks[data.pdf.period + '/pdf']
             if not $scope.pdfs[data.pdf.period]?
               $scope.pdfs[data.pdf.period] = []
             $scope.pdfs[data.pdf.period].push(

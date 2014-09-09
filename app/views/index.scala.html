@@ -54,8 +54,16 @@
 	    <div class="col-md-9" ng-show="period">
 	      <h3>
           {{period}}
-          <button class="btn btn-default" ng-click="createPdf()">Maak PDF</button>
+          <button class="btn btn-default" ng-click="createPdf()" ng-disabled="tasks[period + '/pdf']">Maak PDF</button>
         </h3>
+        <div class="alert alert-info" role="alert" ng-repeat="(taskKey, task) in tasks">
+          {{task.name}}
+          <div class="progress">
+					  <div class="progress-bar progress-bar-striped active"  role="progressbar" aria-valuenow="{{task.progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{task.progress}}%">
+					    <span class="sr-only">{{task.progress}}% Complete</span>
+					  </div>
+					</div>
+        </div>
         <div class="well well-sm" ng-show="pdfs[period]">
           <a ng-repeat="pdf in pdfs[period]" href="/pdf/{{pdf.uuid}}"><span class="glyphicon glyphicon-file"></span>&nbsp;{{pdf.timestamp}}</a>
         </div>
