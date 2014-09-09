@@ -91,8 +91,6 @@ class OvChipkaartClient(val username: String, val password: String)(implicit con
       val year = date.takeRight(4)
       s"$year-$month-$day"
     }
-
-    Thread.sleep(1000)
     val table: HtmlTable = page.getFirstByXPath("//table[contains(@class, 'transacties')]")
     try {
       val transactions = table.getRows().drop(1).flatMap { row =>
@@ -112,7 +110,13 @@ class OvChipkaartClient(val username: String, val password: String)(implicit con
           None
         }
       }.toList
-      transactions ++ listTransactions(period, page.getAnchorByText("volgende").click(), callback)
+      val topRow = table.getRow(1).asXml()
+      val nextPage: HtmlPage = page.getAnchorByText("volgende").click()
+      while (nextPage.getFirstByXPath[HtmlTable]("//table[contains(@class, 'transacties')]").getRow(1).asXml() == topRow) {
+        println("Waiting for page change...")
+        Thread.sleep(100)
+      }
+      transactions ++ listTransactions(period, nextPage, callback)
     } catch {
       case e: Exception =>
         println(e.getMessage())
