@@ -6,6 +6,7 @@
 GET     /                           controllers.Application.index
 
 GET     /ov                         controllers.Application.ov
+GET     /pdf/:uuid                  controllers.Application.pdf(uuid)
 
 POST    /process                    controllers.Application.process
 

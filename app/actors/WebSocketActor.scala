@@ -29,19 +29,27 @@ class WebSocketActor(out: ActorRef) extends Actor {
   import lib.OvChipkaartClient.Transaction
   
   def receive = {
+    // messages from browser
     case JsObject(Seq(("username", JsString(username)), ("password", JsString(password)))) =>
       ov ! Login(username, password)
       ov ! ListPeriods
       
     case JsString(period) =>
       ov ! SelectPeriod(period)
+      
+    case JsObject(Seq(("period", JsString(period)), ("transactions", JsArray(transactions)))) =>
+      ov ! CreatePdf(period, transactions.map(_.as[String]))
     
+    // messages from OvChipkaartActor
     case Periods(periods) =>
       out ! Json.obj("periods" -> periods.map(_.name))
       
-    case Transaction(period, date, time, desc, locIn, locOut, price) =>
-      out ! Json.obj("transaction" -> Json.obj("period" -> period, "date" -> date, "time" -> time, "description" -> desc, "in" -> locIn, "out" -> locOut, "price" -> price))
+    case Transaction(period, date, time, desc, locIn, locOut, price, name) =>
+      out ! Json.obj("transaction" -> Json.obj("period" -> period, "date" -> date, "time" -> time, "description" -> desc, "in" -> locIn, "out" -> locOut, "price" -> price, "name" -> name))
     
+    case Pdf(period, uuid) =>
+      out ! Json.obj("pdf" -> Json.obj("uuid" -> uuid, "period" -> period))
+      
     case Finished(period) =>
       out ! Json.obj("finished" -> period)
      

@@ -22,8 +22,8 @@ require([ 'angular', 'angular-animate', 'underscorejs', 'bootstrap',
           )
   ]);
 
-  module.controller('MainCtrl', [ '$scope', '$window', 'focus',
-    ($scope, $window, focus) ->
+  module.controller('MainCtrl', [ '$scope', '$window', '$http', 'focus',
+    ($scope, $window, $http, focus) ->
       $scope.loggedIn = false
       $scope.username = $window.localStorage.username || ''
       $scope.password = $window.localStorage.password || ''
@@ -31,6 +31,7 @@ require([ 'angular', 'angular-animate', 'underscorejs', 'bootstrap',
       $scope.transactions = []
       $scope.days = {}
       $scope.destinations = angular.fromJson($window.localStorage.destinations) || []
+      $scope.pdfs = {}
       
       updateDays = ->
         days = _($scope.transactions).groupBy((tx) -> tx.date)
@@ -78,6 +79,14 @@ require([ 'angular', 'angular-animate', 'underscorejs', 'bootstrap',
         else
           console.log('Loading transactions from website')
           socket.send(angular.toJson(period))
+          
+      $scope.createPdf = ->
+        selectedTransactions = _(_(_(_($scope.days).filter((day) -> day.selected)).map((day) -> day.transactions)).flatten()).map((tx) -> tx.name)
+        console.log('Create pdf', selectedTransactions)
+        socket.send(angular.toJson(
+          period: $scope.period
+          transactions: selectedTransactions
+        ))
 
       $scope.addDestination = (destination) ->
         $scope.destinations = _($scope.destinations).union([destination])
@@ -106,6 +115,13 @@ require([ 'angular', 'angular-animate', 'underscorejs', 'bootstrap',
           if data.finished? and data.finished == $scope.period
             console.log('Saving transactions to localStorage')
             $window.localStorage[periodKey()] = angular.toJson($scope.transactions)
+          if data.pdf?
+            if not $scope.pdfs[data.pdf.period]?
+              $scope.pdfs[data.pdf.period] = []
+            $scope.pdfs[data.pdf.period].push(
+              timestamp: new Date()
+              uuid: data.pdf.uuid
+            )
   ])
   
   angular.bootstrap(document, ['ov-verwerker'])

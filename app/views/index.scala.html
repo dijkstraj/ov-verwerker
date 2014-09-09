@@ -51,10 +51,20 @@
 				</ul>
 	    </div>
 	    
-	    <div class="col-md-9">
-	      <h3>{{period}}</h3>
+	    <div class="col-md-9" ng-show="period">
+	      <h3>
+          {{period}}
+          <button class="btn btn-default" ng-click="createPdf()">Maak PDF</button>
+        </h3>
+        <div class="well well-sm" ng-show="pdfs[period]">
+          <a ng-repeat="pdf in pdfs[period]" href="/pdf/{{pdf.uuid}}"><span class="glyphicon glyphicon-file"></span>&nbsp;{{pdf.timestamp}}</a>
+        </div>
 	      <div ng-repeat="(date, day) in days | orderBy:'date'">
-	        <h4>{{day.date}} {{day.destination}} {{day.total | currency:'€'}}</h4>
+	        <h4>
+            <a class="label label-success pull-right" ng-show="day.selected" ng-click="day.selected = false">Declareren</a>
+            <a class="label label-danger pull-right" ng-hide="day.selected" ng-click="day.selected = true">Niet declareren</a>
+	          {{day.date}} {{day.destination}} {{day.total | currency:'€'}}
+	        </h4>
 	        <table class="table table-hover table-condensed">
 		        <tbody>
 		          <tr ng-repeat="tx in day.transactions | orderBy:'time'">

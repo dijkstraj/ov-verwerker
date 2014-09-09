@@ -10,19 +10,38 @@ import org.joda.time.DateTimeConstants.TUESDAY
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import play.api.mvc.WebSocket
-import play.api.libs.json.JsValue
+import play.api.libs.json._
 import _root_.actors.WebSocketActor
 import play.api.Play.current
 import scala.concurrent.Future
+import lib.OvChipkaartClient
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.iteratee.Enumerator
+import play.api.cache.Cache
 
 object Application extends Controller {
 
+  case class PdfRequest(username: String, password: String, period: String, transactions: List[String])
+  
+  object PdfRequest {
+    val format = Json.format[PdfRequest]
+  }
+  
   def index = Action {
     Ok(views.html.index())
   }
   
   def ov = WebSocket.tryAcceptWithActor[JsValue, JsValue] { request =>
     Future.successful(Right(WebSocketActor.props _))
+  }
+  
+  def pdf(uuid: String) = Action { request =>
+    Cache.get(uuid) match {
+      case Some((period: String, tempFile: File)) =>
+        Ok.sendFile(tempFile, false, _ => period + ".pdf")
+      case _ =>
+        BadRequest("Unknown PDF")
+    }
   }
 
   def process = Action(parse.multipartFormData) { request =>
