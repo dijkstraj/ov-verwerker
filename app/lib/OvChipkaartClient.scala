@@ -11,7 +11,7 @@ object OvChipkaartClient {
     val login = root + "login/"
     val transactions = root + "mijnovchipkaart/reizenentransacties/mijnreizenentransacties/"
   }
-  case class Transaction(date: String, time: String, description: String, in: String, out: String, price: Double)
+  case class Transaction(period: String, date: String, time: String, description: String, in: String, out: String, price: Double)
   
   def withClient[T](context: ExecutionContext)(fn: OvChipkaartClient => Future[T]): (String, String) => Future[T] = (username: String, password: String) => {
     implicit val ctxt = context
@@ -81,10 +81,10 @@ class OvChipkaartClient(val username: String, val password: String)(implicit con
     f.getSelectByName("periodes").getOptionByText(period).setSelected(true)
     val response: HtmlPage = f.getButtonByName("submitzoekopdracht").click()
 
-    listTransactions(response, callback)
+    listTransactions(period, response, callback)
   }
 
-  private def listTransactions(page: HtmlPage, callback: Transaction => Unit): List[Transaction] = {
+  private def listTransactions(period: String, page: HtmlPage, callback: Transaction => Unit): List[Transaction] = {
     def reorderDate(date: String): String = {
       val day = date.take(2)
       val month = date.drop(3).take(2)
@@ -103,7 +103,7 @@ class OvChipkaartClient(val username: String, val password: String)(implicit con
             case Some(re(time, out, in, price)) =>
               val name = row.getCell(3).getFirstChild().getAttributes().getNamedItem("name").getTextContent()
               println(name)
-              val tx = Transaction(reorderDate(row.getCell(0).asText()), time, description, in, out, price.replace(",", ".").toDouble)
+              val tx = Transaction(period, reorderDate(row.getCell(0).asText()), time, description, in, out, price.replace(",", ".").toDouble)
               callback(tx)
               Some(tx)
             case _ => None
@@ -112,7 +112,7 @@ class OvChipkaartClient(val username: String, val password: String)(implicit con
           None
         }
       }.toList
-      transactions ++ listTransactions(page.getAnchorByText("volgende").click(), callback)
+      transactions ++ listTransactions(period, page.getAnchorByText("volgende").click(), callback)
     } catch {
       case e: Exception =>
         println(e.getMessage())

@@ -15,6 +15,7 @@ object OvChipkaartActor {
   case class Error(error: String) extends Response
   case class Period(name: String) extends Response
   case class Periods(periods: List[Period]) extends Response
+  case class Finished(period: String) extends Response
 }
 
 class OvChipkaartActor extends Actor {
@@ -44,7 +45,10 @@ class OvChipkaartActor extends Actor {
 
     case SelectPeriod(period) =>
       val originalSender = sender
-      OvChipkaartClient.listTransactions(period, originalSender ! _)(defaultContext)(username, password)
+      OvChipkaartClient.listTransactions(period, originalSender ! _)(defaultContext)(username, password).onSuccess {
+        case _ => originalSender ! Finished(period)
+        
+      }
 
     case _ =>
       println("Unknown message")

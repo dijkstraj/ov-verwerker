@@ -39,9 +39,12 @@ class WebSocketActor(out: ActorRef) extends Actor {
     case Periods(periods) =>
       out ! Json.obj("periods" -> periods.map(_.name))
       
-    case Transaction(date, time, desc, locIn, locOut, price) =>
-      out ! Json.obj("transaction" -> Json.obj("date" -> date, "time" -> time, "description" -> desc, "in" -> locIn, "out" -> locOut, "price" -> price))
+    case Transaction(period, date, time, desc, locIn, locOut, price) =>
+      out ! Json.obj("transaction" -> Json.obj("period" -> period, "date" -> date, "time" -> time, "description" -> desc, "in" -> locIn, "out" -> locOut, "price" -> price))
     
+    case Finished(period) =>
+      out ! Json.obj("finished" -> period)
+     
     case Error(error) =>
       out ! Json.obj("error" -> error)
   }

@@ -39,10 +39,16 @@
     </div>
     <div ng-show="loggedIn" ng-cloak>
 	    <div class="col-md-3">
-	      <h3>Selectie</h3>
-	      <div class="list-group">
-	        <a href="#" class="list-group-item" ng-repeat="p in periods" ng-class="{active: p == period}" ng-click="selectPeriod(p)">{{ p }}</a>
-	      </div>
+	      <ul class="nav nav-pills nav-stacked">
+				  <li ng-repeat="p in periods" ng-class="{active: p == period}">
+				    <a href="#" ng-click="selectPeriod(p, {refresh: p == period})">
+				      {{ p }}
+				      <span class="pull-right" ng-show="p == period">
+				        <span class="glyphicon glyphicon-refresh"></span>
+				      </span>
+				    </a>
+				  </li>
+				</ul>
 	    </div>
 	    
 	    <div class="col-md-9">

@@ -65,10 +65,19 @@ require([ 'angular', 'angular-animate', 'underscorejs', 'bootstrap',
           )
         )
         
-      $scope.selectPeriod = (period) ->
+      periodKey = ->
+        $scope.username + '/' + $scope.period
+        
+      $scope.selectPeriod = (period, options) ->
         $scope.period = period
         $scope.transactions = []
-        socket.send(angular.toJson(period))
+        if $window.localStorage[periodKey()]? and options?.refresh != true
+          console.log('Loading transactions from localStorage')
+          $scope.transactions = angular.fromJson($window.localStorage[periodKey()])
+          updateDays()
+        else
+          console.log('Loading transactions from website')
+          socket.send(angular.toJson(period))
 
       $scope.addDestination = (destination) ->
         $scope.destinations = _($scope.destinations).union([destination])
@@ -91,9 +100,12 @@ require([ 'angular', 'angular-animate', 'underscorejs', 'bootstrap',
             $window.localStorage.username = $scope.username
             $window.localStorage.password = $scope.password
             $scope.loggedIn = true
-          if data.transaction?
+          if data.transaction? and data.transaction.period == $scope.period
             $scope.transactions.push(data.transaction)
             updateDays()
+          if data.finished? and data.finished == $scope.period
+            console.log('Saving transactions to localStorage')
+            $window.localStorage[periodKey()] = angular.toJson($scope.transactions)
   ])
   
   angular.bootstrap(document, ['ov-verwerker'])
