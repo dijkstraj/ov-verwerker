@@ -1,6 +1,15 @@
 OV Verwerker
 ============
 
+Online tool gebruiken
+---------------------
+
+* Ga naar [ov-verwerker.herokuapp.com](http://ov-verwerker.herokuapp.com)
+* Gebruik je ov-chipkaart.nl inloggegevens
+* Kies de juiste maand en selecteer de dagen/bestemmingen die je wilt declareren
+* Klik op "Maak PDF"
+* Controleer het totaalbedrag in de PDF met het bedrag in de tool
+
 Declaraties aanvinken op "Mijn OV-chipkaart"
 --------------------------------------------
 
