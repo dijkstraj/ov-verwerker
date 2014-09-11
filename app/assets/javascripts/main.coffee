@@ -33,6 +33,7 @@ require([ 'angular', 'angular-animate', 'underscorejs', 'bootstrap',
       $scope.destinations = angular.fromJson($window.localStorage.destinations) || []
       $scope.pdfs = {}
       $scope.tasks = {}
+      $scope.globalTasks = {}
       
       updateDays = ->
         days = _($scope.transactions).groupBy((tx) -> tx.date)
@@ -60,6 +61,10 @@ require([ 'angular', 'angular-animate', 'underscorejs', 'bootstrap',
         console.log($scope.days)
       
       $scope.login = ->
+        $scope.loggingIn = true
+        $scope.globalTasks['login'] =
+          name: 'Login controleren op ov-chipkaart.nl'
+          progress: 100
         socket.send(
           angular.toJson(
             username: $scope.username
@@ -116,6 +121,8 @@ require([ 'angular', 'angular-animate', 'underscorejs', 'bootstrap',
             $window.localStorage.username = $scope.username
             $window.localStorage.password = $scope.password
             $scope.loggedIn = true
+            $scope.loggingIn = false
+            delete $scope.globalTasks['login']
           if data.transaction? and data.transaction.period == $scope.period
             $scope.transactions.push(data.transaction)
             updateDays()

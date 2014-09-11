@@ -17,6 +17,7 @@
 	  </div>
     
     <div class="col-md-12" ng-hide="loggedIn">
+    <div class="col-md-12" ng-hide="loggedIn || loggingIn">
       <div class="col-md-6">
 	      <h3>Inloggen</h3>
 	      <div class="form-group">
@@ -37,6 +38,16 @@
         </p>
       </div>
     </div>
+
+    <div class="alert alert-info" role="alert" ng-repeat="(taskKey, task) in globalTasks" ng-cloak>
+      {{task.name}}
+      <div class="progress">
+        <div class="progress-bar progress-bar-striped active"  role="progressbar" aria-valuenow="{{task.progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{task.progress}}%">
+          <span class="sr-only">{{task.progress}}% Complete</span>
+        </div>
+      </div>
+    </div>
+
     <div ng-show="loggedIn" ng-cloak>
 	    <div class="col-md-3">
 	      <ul class="nav nav-pills nav-stacked">
