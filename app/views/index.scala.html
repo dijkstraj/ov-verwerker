@@ -12,21 +12,20 @@
 </head>
 <body ng-controller="MainCtrl">
   <div class="container">
-	  <div class="page-header">
-	    <h1 class="page-title">OV Declaraties</h1>
-	  </div>
+    <div class="page-header">
+      <h1 class="page-title">OV Declaraties</h1>
+    </div>
     
-    <div class="col-md-12" ng-hide="loggedIn">
     <div class="col-md-12" ng-hide="loggedIn || loggingIn">
       <div class="col-md-6">
-	      <h3>Inloggen</h3>
-	      <div class="form-group">
-	        <input type="text" class="form-control" id="username" placeholder="Username" ng-model="username" focus-on="focusCommand">
-	      </div>
-	      <div class="form-group">
-	        <input type="password" class="form-control" id="password" placeholder="Password" ng-model="password">
-	      </div>
-	      <button type="submit" class="btn btn-primary" ng-disabled="!username || !password" ng-click="login()">Log in</button>
+        <h3>Inloggen</h3>
+        <div class="form-group">
+          <input type="text" class="form-control" id="username" placeholder="Username" ng-model="username" focus-on="focusCommand">
+        </div>
+        <div class="form-group">
+          <input type="password" class="form-control" id="password" placeholder="Password" ng-model="password">
+        </div>
+        <button type="submit" class="btn btn-primary" ng-disabled="!username || !password" ng-click="login()">Log in</button>
       </div>
       <div class="col-md-6">
         <h3>Privacy</h3>
@@ -49,54 +48,87 @@
     </div>
 
     <div ng-show="loggedIn" ng-cloak>
-	    <div class="col-md-3">
-	      <ul class="nav nav-pills nav-stacked">
-				  <li ng-repeat="p in periods" ng-class="{active: p == period}">
-				    <a href="#" ng-click="selectPeriod(p, {refresh: p == period})">
-				      {{ p }}
-				      <span class="pull-right" ng-show="p == period">
-				        <span class="glyphicon glyphicon-refresh"></span>
-				      </span>
-				    </a>
-				  </li>
-				</ul>
-	    </div>
-	    
-	    <div class="col-md-9" ng-show="period">
-	      <h3>
-          {{period}}
-          <button class="btn btn-default" ng-click="createPdf()" ng-disabled="tasks[period + '/pdf']">Maak PDF</button>
+      <div class="col-md-3">
+        <h3>Maand</h3>
+        <ul class="nav nav-pills nav-stacked">
+          <li ng-repeat="p in periods" ng-class="{active: p == period}">
+            <a href="#" ng-click="selectPeriod(p, {refresh: p == period})">
+              {{ p }}
+              <span class="pull-right" ng-show="p == period">
+                <span class="glyphicon glyphicon-refresh"></span>
+              </span>
+            </a>
+          </li>
+        </ul>
+        
+        <h3>
+          Dagen
+          <span class="badge">{{numberOfSelectedDays()}}</span>
         </h3>
+        <div class="btn-group btn-group-sm">
+          <label class="btn btn-primary" ng-model="rules.days[1]" btn-checkbox>ma</label>
+          <label class="btn btn-primary" ng-model="rules.days[2]" btn-checkbox>di</label>
+          <label class="btn btn-primary" ng-model="rules.days[3]" btn-checkbox>wo</label>
+          <label class="btn btn-primary" ng-model="rules.days[4]" btn-checkbox>do</label>
+          <label class="btn btn-primary" ng-model="rules.days[5]" btn-checkbox>vr</label>
+          <label class="btn btn-primary" ng-model="rules.days[6]" btn-checkbox>za</label>
+          <label class="btn btn-primary" ng-model="rules.days[0]" btn-checkbox>zo</label>
+        </div>
+        
+        <h3>
+          Bestemmingen
+          <span class="badge">{{numberOfDestinations()}}</span>
+        </h3>
+        <ul class="list-group">
+          <li class="list-group-item" ng-repeat="(destination, include) in rules.destinations" ng-class="include ? 'list-group-item-success' : 'list-group-item-danger'">
+            {{destination}}
+            <a href="#" class="pull-right" ng-click="removeDestination(destination); $event.preventDefault()">&#x2716;</a>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="col-md-9" ng-show="period">
+        <h3>
+          Juni 2014
+          <div class="pull-right">
+            <small class="text-right" style="display: inline-block; position: relative; top: 5px; font-size: 60%">
+              totaal {{periodTotal() | currency:'€'}}
+              <br/>
+              te declareren <b>{{periodTotalSelected() | currency:'€'}}</b>
+            </small>
+            <button class="btn btn-default" ng-click="createPdf()" ng-disabled="tasks[period + '/pdf']">Maak PDF</button>
+          </div>
+        </h3>
+        <br/>
         <div class="alert alert-info" role="alert" ng-repeat="(taskKey, task) in tasks">
           {{task.name}}
           <div class="progress">
-					  <div class="progress-bar progress-bar-striped active"  role="progressbar" aria-valuenow="{{task.progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{task.progress}}%">
-					    <span class="sr-only">{{task.progress}}% Complete</span>
-					  </div>
-					</div>
+            <div class="progress-bar progress-bar-striped active"  role="progressbar" aria-valuenow="{{task.progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{task.progress}}%">
+              <span class="sr-only">{{task.progress}}% Complete</span>
+            </div>
+          </div>
         </div>
         <div class="well well-sm" ng-show="pdfs[period]">
           <a ng-repeat="pdf in pdfs[period]" href="/pdf/{{pdf.uuid}}"><span class="glyphicon glyphicon-file"></span>&nbsp;{{pdf.timestamp}}</a>
         </div>
-	      <div ng-repeat="(date, day) in days | orderBy:'date'">
-	        <h4>
-            <a class="label label-success pull-right" ng-show="day.selected" ng-click="day.selected = false">Declareren</a>
-            <a class="label label-danger pull-right" ng-hide="day.selected" ng-click="day.selected = true">Niet declareren</a>
-	          {{day.date}} {{day.destination}} {{day.total | currency:'€'}}
-	        </h4>
-	        <table class="table table-hover table-condensed">
-		        <tbody>
-		          <tr ng-repeat="tx in day.transactions | orderBy:'time'">
-		            <td style="width: 10%">{{tx.time}}</td>
-		            <td style="width: 40%">{{tx.in}}</td>
-		            <td>&rarr;</td>
-		            <td style="width: 40%">{{tx.out}}</td>
-		            <td style="width: 10%" class="text-right">{{tx.price | currency:'€'}}</td>
-		          </tr>
-		        </tbody>
-		      </table>
-	      </div>
-	    </div>
+        <div ng-repeat="(date, day) in days | orderBy:'date'">
+          <h4>
+            <a class="label pull-right" ng-class="day.selected ? 'label-success' : 'label-danger'">{{day.total | currency:'€'}}</a>
+            {{weekDays[day.date.getDay()]}} {{day.date.getDate()}} <span ng-click="addDestination(day.destination)">{{day.destination}}</span> 
+          </h4>
+          <table class="table table-hover table-condensed">
+            <tbody>
+              <tr ng-repeat="tx in day.transactions | orderBy:'time'">
+                <td style="width: 10%">{{tx.time}}</td>
+                <td style="width: 40%">{{tx.in}}</td>
+                <td>&rarr;</td>
+                <td style="width: 40%">{{tx.out}}</td>
+                <td style="width: 10%" class="text-right">{{tx.price | currency:'€'}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </body>
